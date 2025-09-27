@@ -1,0 +1,10 @@
+services:
+  mysql:
+    image: 'mysql:latest'
+    environment:
+        MYSQL_DATABASE: soen342
+        MYSQL_USER: soen342
+        MYSQL_PASSWORD: soen342
+        MYSQL_ROOT_PASSWORD: soen342
+    ports:
+      - '3308:3306'
