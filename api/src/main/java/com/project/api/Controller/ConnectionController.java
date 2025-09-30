@@ -21,6 +21,9 @@ public class ConnectionController {
     @Autowired
     private ConnectionService connectionService;
 
+    @Autowired
+    private ConnectionService connectionService;
+
     @PostMapping("/upload")
     public ResponseEntity<String> uploadConnections(@RequestBody List<Connection> connections) {
         try {
