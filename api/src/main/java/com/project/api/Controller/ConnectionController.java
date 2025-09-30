@@ -1,7 +1,9 @@
 package com.project.api.Controller;
 
 import com.project.api.Entity.Connection;
+import com.project.api.Entity.SearchParameters;
 import com.project.api.Repository.ConnectionRepository;
+import com.project.api.Service.ConnectionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,10 +13,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/connections")
+@CrossOrigin(origins = "http://localhost:4200")
 public class ConnectionController {
 
     @Autowired
     private ConnectionRepository connectionRepository;
+    @Autowired
+    private ConnectionService connectionService;
 
     @PostMapping("/upload")
     public ResponseEntity<String> uploadConnections(@RequestBody List<Connection> connections) {
@@ -27,5 +32,8 @@ public class ConnectionController {
         }
     }
 
-
+    @PostMapping("/search")
+    public ResponseEntity<List<Connection>> searchConnections(@RequestBody SearchParameters connection) {
+        return ResponseEntity.ok(connectionService.searchConnections(connection));
+    }
 }

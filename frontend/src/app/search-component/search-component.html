@@ -1,0 +1,31 @@
+<form [formGroup]="applyForm" (submit)="submitApplication()">
+    <label>Departure City:</label>
+    <input type="text" id="DepartureCity" formControlName="departureCity">
+    <label>Arrival City:</label>
+    <input type="text" id="ArrivalCity" formControlName="arrivalCity">
+    <label>Departure Time:</label>
+    <input type="text" id="departureTime" formControlName="departureTime">
+    <label>Arrival Time:</label>
+    <input type="text" id="arrivalTime" formControlName="arrivalTime">
+    <label>Train Type:</label>
+    <input type="text" id="trainType" formControlName="trainType">
+    <label>Days of Operation:</label>
+    <input type="text" id="daysOfOperation" formControlName="daysOfOperation">
+    <label>First Class Rate:</label>
+    <input type="text" id="firstClassRate" formControlName="firstClassRate">
+    <label>Second Class Rate:</label>
+    <input type="text" id="secondClassRate" formControlName="secondClassRate">
+    <label>Sort By:</label>
+    <select id="sortBy" formControlName="sortBy">
+        <option value="">No choice</option>
+        <option value="firstClassRate">First Class Rate</option>
+        <option value="secondClassRate">Second Class Rate</option>
+    </select>
+    <label>Sort By:</label>
+    <select id="sortOrder" formControlName="sortOrder">
+        <option value="">No choice</option>
+        <option value="asc">Ascending</option>
+        <option value="desc">Descending</option>
+    </select>
+    <button type="submit">Search</button>
+</form>
