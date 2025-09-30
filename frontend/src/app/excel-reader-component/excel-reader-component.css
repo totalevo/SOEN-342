@@ -1,0 +1,61 @@
+.upload-container {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.upload-card {
+  max-width: 600px;
+  width: 100%;
+}
+
+.file-input-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px 0;
+}
+
+.select-file-btn {
+  min-width: 150px;
+}
+
+.file-name {
+  color: #666;
+  font-style: italic;
+  flex: 1;
+}
+
+mat-card-actions {
+  padding: 16px;
+}
+
+button mat-icon {
+  margin-right: 8px;
+}
+
+.upload-container {
+  padding: 20px;
+}
+
+.upload-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  color: #666;
+}
+
+h2 {
+  margin: 0 0 10px 0;
+}

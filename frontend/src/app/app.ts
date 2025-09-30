@@ -1,9 +1,10 @@
 import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { MatTabsModule } from '@angular/material/tabs';
+import { ExcelReaderComponent } from './excel-reader-component/excel-reader-component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [MatTabsModule, ExcelReaderComponent],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })

@@ -1,2 +1,32 @@
-<input type="file" (change)="onFileChange($event)" accept=".xlsx, .xls" />
-<button (click)="sendNewListOfConnection()">SEND EXCEL INFO</button>
+<div class="upload-container">
+  <mat-card>
+    <mat-card-content>
+      <h2>Upload Connection Data</h2>
+
+      <div class="upload-section">
+        <input type="file" #fileInput hidden (change)="onFileChange($event)" accept=".xlsx, .xls" />
+
+        <button mat-stroked-button color="primary" (click)="fileInput.click()">
+          <mat-icon>folder_open</mat-icon>
+          Browse
+        </button>
+
+        <div class="file-info">
+          @if(fileName){
+          <mat-icon color="primary">description</mat-icon>}
+          <span>{{ fileName || 'No file selected' }}</span>
+        </div>
+
+        <button
+          mat-flat-button
+          color="primary"
+          (click)="sendNewListOfConnection()"
+          [disabled]="!fileName"
+        >
+          <mat-icon>cloud_upload</mat-icon>
+          Upload
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
