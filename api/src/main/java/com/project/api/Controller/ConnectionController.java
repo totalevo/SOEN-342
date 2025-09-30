@@ -24,7 +24,7 @@ public class ConnectionController {
     @PostMapping("/upload")
     public ResponseEntity<String> uploadConnections(@RequestBody List<Connection> connections) {
         try {
-            List<Connection> savedConnections = connectionRepository.saveAll(connectionService.returnConnectionsWithDurationCalculated(connections));
+            List<Connection> savedConnections = connectionRepository.saveAll(connectionService.processAndCleanUpRawConnections(connections));
             return ResponseEntity.ok("Successfully saved " + savedConnections.size() + " connections");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

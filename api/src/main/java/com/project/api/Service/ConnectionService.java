@@ -1,5 +1,7 @@
 package com.project.api.Service;
 
+import com.project.api.Class.ConnectionDuration;
+import com.project.api.Class.DaysBitMap;
 import com.project.api.Entity.Connection;
 import org.springframework.stereotype.Service;
 
@@ -8,8 +10,24 @@ import java.util.stream.Collectors;
 
 @Service
 public class ConnectionService {
-    int HOURS_IN_A_DAY=24;
-    int MINUTES_IN_AN_HOUR=60;
+
+
+    String[] DAYS_OF_THE_WEEK={"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+
+
+    public List<Connection> processAndCleanUpRawConnections(List<Connection> connections){
+        List<Connection> cleanedConnections= storingBitMapForDaysOfOperation(connections);
+        cleanedConnections = returnConnectionsWithDurationCalculated(connections);
+        return cleanedConnections;
+    }
+
+    public List<Connection> storingBitMapForDaysOfOperation(List<Connection> connections){
+        return connections.stream().map(connection -> {
+            int bitmap = DaysBitMap.convertToBitmap(connection.getDaysOfOperation());
+            connection.setBitmapDaysOfOperation(bitmap);
+            return connection;
+        }).collect(Collectors.toList());
+    }
 
     public List<Connection>  returnConnectionsWithDurationCalculated(List<Connection> connections) {
         return connections.stream().map(connection -> {
@@ -20,10 +38,9 @@ public class ConnectionService {
             String [] departureParts = connection.getDepartureTime().split(":");
             String [] arrivalParts = arrivalTime.split(":");
 
-            int totalMinutes = getTotalMinutes(departureParts, arrivalParts);
+            int totalMinutes = ConnectionDuration.getTotalMinutes(departureParts, arrivalParts);
 
             connection.setDurationMinutes(totalMinutes);
-            connection.setArrivalTime(arrivalTime);
             return connection;
         }).collect(Collectors.toList());
 
@@ -31,18 +48,5 @@ public class ConnectionService {
 
     }
 
-    private int getTotalMinutes(String[] departureParts, String[] arrivalParts) {
-        int departureHours = Integer.parseInt(departureParts[0]);
-        int departureMinutes = Integer.parseInt(departureParts[1]);
-        int arrivalHours = Integer.parseInt(arrivalParts[0]);
-        int arrivalMinutes = Integer.parseInt(arrivalParts[1]);
-        int totalMinutes=0;
-        if(arrivalHours< departureHours){
-            totalMinutes= (((HOURS_IN_A_DAY+arrivalHours)*MINUTES_IN_AN_HOUR)+arrivalMinutes)-(departureHours*MINUTES_IN_AN_HOUR+departureMinutes);
-        }
-        else{
-            totalMinutes= (arrivalHours*MINUTES_IN_AN_HOUR+arrivalMinutes) - (departureHours*MINUTES_IN_AN_HOUR+departureMinutes);
-        }
-        return totalMinutes;
-    }
+
 }

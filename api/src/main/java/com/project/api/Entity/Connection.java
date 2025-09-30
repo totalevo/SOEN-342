@@ -47,4 +47,7 @@ public class Connection {
     @Column(name = "duration_minutes", nullable = false)
     private int durationMinutes;
 
+    @Column(name = "bitmap_days_of_operation", nullable = false)
+    private int bitmapDaysOfOperation;
+
 }
