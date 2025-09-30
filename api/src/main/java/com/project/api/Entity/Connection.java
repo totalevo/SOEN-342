@@ -44,5 +44,7 @@ public class Connection {
     @Column(name = "second_class_rate", nullable = false)
     private BigDecimal secondClassRate;
 
+    @Column(name = "duration_minutes", nullable = false)
+    private int durationMinutes;
 
 }
