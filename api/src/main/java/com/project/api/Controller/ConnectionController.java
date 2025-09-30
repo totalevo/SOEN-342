@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/connections")
-@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*", allowCredentials = "true")
+@CrossOrigin(origins = "http://localhost:4200")
 public class ConnectionController {
 
     @Autowired
@@ -24,7 +24,7 @@ public class ConnectionController {
     @PostMapping("/upload")
     public ResponseEntity<String> uploadConnections(@RequestBody List<Connection> connections) {
         try {
-            List<Connection> savedConnections = connectionRepository.saveAll(connectionService.processAndCleanUpRawConnections(connections));
+            List<Connection> savedConnections = connectionRepository.saveAll(connections);
             return ResponseEntity.ok("Successfully saved " + savedConnections.size() + " connections");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
