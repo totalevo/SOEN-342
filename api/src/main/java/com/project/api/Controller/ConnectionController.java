@@ -21,13 +21,11 @@ public class ConnectionController {
     @Autowired
     private ConnectionService connectionService;
 
-    @Autowired
-    private ConnectionService connectionService;
-
     @PostMapping("/upload")
     public ResponseEntity<String> uploadConnections(@RequestBody List<Connection> connections) {
         try {
-            List<Connection> savedConnections = connectionRepository.saveAll(connections);
+            List<Connection> processedConnections = connectionService.processAndCleanUpRawConnections(connections);
+            List<Connection> savedConnections = connectionRepository.saveAll(processedConnections);
             return ResponseEntity.ok("Successfully saved " + savedConnections.size() + " connections");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

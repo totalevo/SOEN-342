@@ -20,6 +20,7 @@ import { ApiConnectorService } from '../services/api-connector.service';
         <p><strong>Days of Operation:</strong> {{ result.daysOfOperation }}</p>
         <p><strong>First Class Rate:</strong> {{ result.firstClassRate }}</p>
         <p><strong>Second Class Rate:</strong> {{ result.secondClassRate }}</p>
+        <p><strong>Duration (Minutes):</strong> {{ result.durationMinutes }}</p>
         <hr>
     }  
   </div>
