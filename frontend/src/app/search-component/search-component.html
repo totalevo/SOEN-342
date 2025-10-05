@@ -1,55 +1,129 @@
 <form [formGroup]="applyForm" (submit)="submitApplication()">
     <label>Departure City:</label>
     <input type="text" id="DepartureCity" formControlName="departureCity">
+    
     <label>Arrival City:</label>
     <input type="text" id="ArrivalCity" formControlName="arrivalCity">
+    
     <label>Departure Time:</label>
     <input type="text" id="departureTime" formControlName="departureTime">
+    
     <label>Arrival Time:</label>
     <input type="text" id="arrivalTime" formControlName="arrivalTime">
+    
     <label>Train Type:</label>
     <input type="text" id="trainType" formControlName="trainType">
+    
     <label>Days of Operation:</label>
     <label>
-    <input type="checkbox" formControlName="monday"> Monday
-  </label>
-  <label>
-    <input type="checkbox" formControlName="tuesday"> Tuesday
-  </label>
-  <label>
-    <input type="checkbox" formControlName="wednesday"> Wednesday
-  </label>
-  <label>
-    <input type="checkbox" formControlName="thursday"> Thursday
-  </label>
-  <label>
-    <input type="checkbox" formControlName="friday"> Friday
-  </label>
-  <label>
-    <input type="checkbox" formControlName="saturday"> Saturday
-  </label>
-  <label>
-    <input type="checkbox" formControlName="sunday"> Sunday
-  </label>
+        <input type="checkbox" formControlName="monday"> Monday
+    </label>
+    <label>
+        <input type="checkbox" formControlName="tuesday"> Tuesday
+    </label>
+    <label>
+        <input type="checkbox" formControlName="wednesday"> Wednesday
+    </label>
+    <label>
+        <input type="checkbox" formControlName="thursday"> Thursday
+    </label>
+    <label>
+        <input type="checkbox" formControlName="friday"> Friday
+    </label>
+    <label>
+        <input type="checkbox" formControlName="saturday"> Saturday
+    </label>
+    <label>
+        <input type="checkbox" formControlName="sunday"> Sunday
+    </label>
 
     <input type="text" id="daysOfOperation" formControlName="daysOfOperation">
+    
     <label>First Class Rate:</label>
     <input type="text" id="firstClassRate" formControlName="firstClassRate">
+    
     <label>Second Class Rate:</label>
     <input type="text" id="secondClassRate" formControlName="secondClassRate">
+    
     <label>Duration (Minutes):</label>
     <input type="text" id="duration" formControlName="duration">
+    
     <label>Sort By:</label>
     <select id="sortBy" formControlName="sortBy">
         <option value="">No choice</option>
         <option value="firstClassRate">First Class Rate</option>
         <option value="secondClassRate">Second Class Rate</option>
     </select>
-    <label>Sort By:</label>
+    
+    <label>Sort Order:</label>
     <select id="sortOrder" formControlName="sortOrder">
         <option value="">No choice</option>
         <option value="asc">Ascending</option>
         <option value="desc">Descending</option>
     </select>
+    
     <button type="submit">Search</button>
 </form>
+
+<!-- Status messages -->
+<div *ngIf="searching">Searching...</div>
+<div *ngIf="searchError">{{searchError}}</div>
+
+<!-- Results -->
+<div *ngIf="directConnections.length > 0">
+  <h3>Direct Connections</h3>
+  <table>
+    <tr>
+      <th>Departure</th>
+      <th>Arrival</th>
+      <th>Departure Time</th>
+      <th>Arrival Time</th>
+      <th>Train Type</th>
+      <th>First Class</th>
+      <th>Second Class</th>
+      <th>Duration</th>
+    </tr>
+    <tr *ngFor="let conn of directConnections">
+      <td>{{ conn.departureCity }}</td>
+      <td>{{ conn.arrivalCity }}</td>
+      <td>{{ conn.departureTime }}</td>
+      <td>{{ conn.arrivalTime }}</td>
+      <td>{{ conn.trainType }}</td>
+      <td>{{ conn.firstClassRate }}</td>
+      <td>{{ conn.secondClassRate }}</td>
+      <td>{{ conn.durationMinutes }}</td>
+    </tr>
+  </table>
+</div>
+
+<div *ngIf="!searching && directConnections.length === 0 && indirectConnections.length > 0">
+  <h3>Indirect (One-Stop) Connections</h3>
+  <div *ngFor="let pair of indirectConnections">
+    <hr>
+    <h4>Option</h4>
+    <table>
+      <tr>
+        <th>Leg</th>
+        <th>Departure</th>
+        <th>Arrival</th>
+        <th>Departure Time</th>
+        <th>Arrival Time</th>
+        <th>Train Type</th>
+        <th>First Class</th>
+        <th>Second Class</th>
+        <th>Duration</th>
+      </tr>
+      <tr *ngFor="let conn of pair; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ conn.departureCity }}</td>
+        <td>{{ conn.arrivalCity }}</td>
+        <td>{{ conn.departureTime }}</td>
+        <td>{{ conn.arrivalTime }}</td>
+        <td>{{ conn.trainType }}</td>
+        <td>{{ conn.firstClassRate }}</td>
+        <td>{{ conn.secondClassRate }}</td>
+        <td>{{ conn.durationMinutes }}</td>
+      </tr>
+    </table>
+  </div>
+</div>
