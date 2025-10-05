@@ -37,4 +37,9 @@ public class ConnectionController {
     public ResponseEntity<List<Connection>> searchConnections(@RequestBody SearchParameters connection) {
         return ResponseEntity.ok(connectionService.searchConnections(connection));
     }
+
+    @GetMapping("/connections/indirect")
+    public List<List<Connection>> getIndirectConnections(@RequestParam String from, @RequestParam String to) {
+        return connectionService.getIndirectConnections(from, to);
+    }
 }

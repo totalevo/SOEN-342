@@ -67,4 +67,35 @@ public class ConnectionCustomRepository {
         cq.select(connectionRoot).where(predicates.toArray(new Predicate[0]));
         return entityManager.createQuery(cq).getResultList();
     }
+
+    public List<List<Connection>> findIndirectConnections(String startCity, String endCity) {
+        // Find all connections from startCity to any city
+        String leg1Query = "SELECT c FROM Connection c WHERE c.departureCity = :startCity";
+        List<Connection> leg1List = entityManager.createQuery(leg1Query, Connection.class)
+                .setParameter("startCity", startCity)
+                .getResultList();
+
+        List<List<Connection>> result = new ArrayList<>();
+
+        // For each leg1, we need to  find a second city that departs from the arrival city of to the endCity
+        for (Connection leg1 : leg1List) {
+            String leg2Query = "SELECT c FROM Connection c WHERE c.departureCity = :transitCity AND c.arrivalCity = :endCity AND c.departureTime > :prevArrival";
+            List<Connection> leg2List = entityManager.createQuery(leg2Query, Connection.class)
+                    .setParameter("transitCity", leg1.getArrivalCity())
+                    .setParameter("endCity", endCity)
+                    .setParameter("prevArrival", leg1.getArrivalTime()) // only allow next connection after first has arrived
+                    .getResultList();
+
+            for (Connection leg2 : leg2List) {
+                // To avoid cycles
+                if (!leg2.getId().equals(leg1.getId())) {
+                    List<Connection> combo = new ArrayList<>();
+                    combo.add(leg1);
+                    combo.add(leg2);
+                    result.add(combo);
+                }
+            }
+        }
+        return result;
+    }
 }

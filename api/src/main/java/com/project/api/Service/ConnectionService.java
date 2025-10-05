@@ -57,4 +57,8 @@ public class ConnectionService {
     public List<Connection> searchConnections(SearchParameters searchParameters) {
         return connectionCustomRepository.findConnectionsDynamically(searchParameters);
     }
+
+    public List<List<Connection>> getIndirectConnections(String from, String to) {
+        return connectionCustomRepository.findIndirectConnections(from, to);
+    }
 }
