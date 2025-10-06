@@ -32,7 +32,7 @@
     <input type="checkbox" formControlName="sunday"> Sunday
   </label>
 
-    <input type="text" id="daysOfOperation" formControlName="daysOfOperation">
+    <!-- <input type="text" id="daysOfOperation" formControlName="daysOfOperation"> -->
     <label>First Class Rate:</label>
     <input type="text" id="firstClassRate" formControlName="firstClassRate">
     <label>Second Class Rate:</label>
@@ -44,8 +44,9 @@
         <option value="">No choice</option>
         <option value="firstClassRate">First Class Rate</option>
         <option value="secondClassRate">Second Class Rate</option>
+        <option value="durationMinutes">Duration</option>
     </select>
-    <label>Sort By:</label>
+    <label>Sort Order:</label>
     <select id="sortOrder" formControlName="sortOrder">
         <option value="">No choice</option>
         <option value="asc">Ascending</option>
