@@ -50,4 +50,8 @@ public class Connection {
     @Column(name = "bitmap_days_of_operation", nullable = false)
     private int bitmapDaysOfOperation;
 
+    public String getId(){
+        return connectionId;
+    }
+
 }
