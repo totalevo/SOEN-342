@@ -2,34 +2,25 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { SearchParameters } from '../models/SearchParameters.model';
 import { ApiConnectorService } from '../services/api-connector.service';
-import { Connection } from '../models/Connection.model';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-search-component',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [ReactiveFormsModule],
   templateUrl: './search-component.html',
-  styleUrl: './search-component.css',
-  standalone: true // If you use standalone components
+  styleUrl: './search-component.css'
 })
-
 export class SearchComponent {
   searchParameters!: SearchParameters;
-  directConnections: Connection[] = [];
-  indirectConnections: Connection[][] = [];
-  searching: boolean = false;
-  searchError: string = '';
-
   constructor(private apiConnectorService: ApiConnectorService) {}
 
   DAY_MASKS = {
-    monday: 1 << 6,    // 64
-    tuesday: 1 << 5,   // 32
-    wednesday: 1 << 4, // 16
-    thursday: 1 << 3,  // 8
-    friday: 1 << 2,    // 4
-    saturday: 1 << 1,  // 2
-    sunday: 1 << 0     // 1
+  monday: 1 << 6,    // 64
+  tuesday: 1 << 5,   // 32
+  wednesday: 1 << 4, // 16
+  thursday: 1 << 3,  // 8
+  friday: 1 << 2,    // 4
+  saturday: 1 << 1,  // 2
+  sunday: 1 << 0     // 1
   };
 
   applyForm = new FormGroup({
@@ -54,11 +45,6 @@ export class SearchComponent {
   });
 
   submitApplication() {
-    this.searching = true;
-    this.directConnections = [];
-    this.indirectConnections = [];
-    this.searchError = '';
-
     this.searchParameters = {
       connectionId: null,
       arrivalCity: this.applyForm.value.arrivalCity || null,
@@ -73,42 +59,17 @@ export class SearchComponent {
       bitmapDays: this.buildDaysBitmap(),
       duration: Number(this.applyForm.value.duration) || null,
     };
-
-    this.apiConnectorService.searchForConnections(this.searchParameters).subscribe(
-      (directConns: Connection[]) => {
-    if (directConns && directConns.length > 0) {
-      this.directConnections = directConns;
-      this.searching = false;
-    } else {
-      this.apiConnectorService.getIndirectConnections(
-        this.searchParameters.departureCity!,
-        this.searchParameters.arrivalCity!
-      ).subscribe(
-        (indirectConns: Connection[][]) => {
-          this.indirectConnections = indirectConns;
-          this.searching = false;
-        },
-        () => {
-          this.searching = false;
-          this.searchError = 'Error retrieving indirect connections';
-        }
-      );
-    }
-  },
-    () => {
-    this.searching = false;
-    this.searchError = 'Error retrieving direct connections';
-    }
-    );
+    console.log(this.searchParameters);
+    this.apiConnectorService.searchForConnections(this.searchParameters);
   }
 
   buildDaysBitmap(): number {
-    let bitmap = 0;
-    for (const day of Object.keys(this.DAY_MASKS) as Array<keyof typeof this.DAY_MASKS>) {
-      if (this.applyForm.get(day)?.value) {
-        bitmap |= this.DAY_MASKS[day];
-      }
+  let bitmap = 0;
+  for (const day of Object.keys(this.DAY_MASKS) as Array<keyof typeof this.DAY_MASKS>) {
+    if (this.applyForm.get(day)?.value) {
+      bitmap |= this.DAY_MASKS[day];
     }
-    return bitmap;
   }
+  return bitmap;
+}
 }
