@@ -68,22 +68,24 @@ public class ConnectionCustomRepository {
         return entityManager.createQuery(cq).getResultList();
     }
 
-    public List<List<Connection>> findIndirectConnections(String startCity, String endCity) {
-        // Find all connections from startCity to any city
+    // Calculate the possible connections, such as 1-stop, 2-stop
+    public List<List<List<Connection>>> findIndirectConnections(String startCity, String endCity) {
+        // Find all connections from startCity to any city, beginning of iteration
         String leg1Query = "SELECT c FROM Connection c WHERE c.departureCity = :startCity";
         List<Connection> leg1List = entityManager.createQuery(leg1Query, Connection.class)
                 .setParameter("startCity", startCity)
                 .getResultList();
 
-        List<List<Connection>> result = new ArrayList<>();
+        List<List<Connection>> oneStopConnections = new ArrayList<>();
+        List<List<Connection>> twoStopConnections = new ArrayList<>();
 
-        // For each leg1, we need to  find a second city that departs from the arrival city of to the endCity
+        // Find 1-stop connections
         for (Connection leg1 : leg1List) {
             String leg2Query = "SELECT c FROM Connection c WHERE c.departureCity = :transitCity AND c.arrivalCity = :endCity AND c.departureTime > :prevArrival";
             List<Connection> leg2List = entityManager.createQuery(leg2Query, Connection.class)
                     .setParameter("transitCity", leg1.getArrivalCity())
                     .setParameter("endCity", endCity)
-                    .setParameter("prevArrival", leg1.getArrivalTime()) // only allow next connection after first has arrived
+                    .setParameter("prevArrival", leg1.getArrivalTime())
                     .getResultList();
 
             for (Connection leg2 : leg2List) {
@@ -92,10 +94,51 @@ public class ConnectionCustomRepository {
                     List<Connection> combo = new ArrayList<>();
                     combo.add(leg1);
                     combo.add(leg2);
-                    result.add(combo);
+                    oneStopConnections.add(combo);
                 }
             }
         }
+
+        // Find 2-stop connections
+        for (Connection leg1 : leg1List) {
+            // Find intermediate connections (leg2) from leg1's arrival city to anywhere (not endCity)
+            String leg2Query = "SELECT c FROM Connection c WHERE c.departureCity = :transitCity1 AND c.arrivalCity != :endCity AND c.departureTime > :prevArrival1";
+            List<Connection> leg2List = entityManager.createQuery(leg2Query, Connection.class)
+                    .setParameter("transitCity1", leg1.getArrivalCity())
+                    .setParameter("endCity", endCity)
+                    .setParameter("prevArrival1", leg1.getArrivalTime())
+                    .getResultList();
+
+            for (Connection leg2 : leg2List) {
+                // To avoid cycles and ensure leg2 is different from leg1
+                if (!leg2.getId().equals(leg1.getId())) {
+                    // Find final leg (leg3) from leg2's arrival city to endCity
+                    String leg3Query = "SELECT c FROM Connection c WHERE c.departureCity = :transitCity2 AND c.arrivalCity = :endCity AND c.departureTime > :prevArrival2";
+                    List<Connection> leg3List = entityManager.createQuery(leg3Query, Connection.class)
+                            .setParameter("transitCity2", leg2.getArrivalCity())
+                            .setParameter("endCity", endCity)
+                            .setParameter("prevArrival2", leg2.getArrivalTime())
+                            .getResultList();
+
+                    for (Connection leg3 : leg3List) {
+                        // To avoid cycles - ensure all three legs are different
+                        if (!leg3.getId().equals(leg1.getId()) && !leg3.getId().equals(leg2.getId())) {
+                            List<Connection> combo = new ArrayList<>();
+                            combo.add(leg1);
+                            combo.add(leg2);
+                            combo.add(leg3);
+                            twoStopConnections.add(combo);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Return result with 1-stop at index 0 and 2-stop at index 1
+        List<List<List<Connection>>> result = new ArrayList<>();
+        result.add(oneStopConnections);
+        result.add(twoStopConnections);
+
         return result;
     }
 }
