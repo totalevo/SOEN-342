@@ -1,5 +1,3 @@
-import { NamedTupleMember } from "typescript";
-
 export interface Connection {
   connectionId: string;
   departureCity: string;

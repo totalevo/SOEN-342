@@ -17,8 +17,11 @@ export class ApiConnectorService {
   saveConnectionListFromExcel(connections: Connection[]): Observable<any> {
     return this.http.post(this.apiUrl + 'api/connections/upload', connections);
   }
-  searchForConnections(params: SearchParameters): Observable<Connection[]> {
-    return this.http.post<Connection[]>(this.apiUrl + 'api/connections/search', params);
+  searchForConnections(searchParameters: SearchParameters): void {
+    this.http.post<any[]>(this.apiUrl + 'api/connections/search', searchParameters)
+      .subscribe(results => {
+        this.resultsSubject.next(results);
+      });
   }
   getIndirectConnections(from: string, to: string): Observable<Connection[][]> {
     return this.http.get<Connection[][]>(`/api/connections/indirect?from=${from}&to=${to}`);
