@@ -56,7 +56,7 @@ public class ConnectionService {
     }
 
     // CHANGED: return type for indirect connections
-    public List<List<List<Connection>>> getIndirectConnections(String from, String to) {
-        return connectionCustomRepository.findIndirectConnections(from, to);
+    public List<List<List<Connection>>> getIndirectConnections(SearchParameters searchParameters) {
+        return connectionCustomRepository.findIndirectConnections(searchParameters);
     }
 }

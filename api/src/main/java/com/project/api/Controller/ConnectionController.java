@@ -39,8 +39,8 @@ public class ConnectionController {
     }
 
     // CHANGED: return type for indirect connections – now returns list of lists
-    @GetMapping("/indirect")
-    public List<List<List<Connection>>> getIndirectConnections(@RequestParam String from, @RequestParam String to) {
-        return connectionService.getIndirectConnections(from, to);
+    @PostMapping("/indirect")
+    public ResponseEntity<List<List<Connection>>> getIndirectConnections(@RequestBody SearchParameters connection) {
+        return ResponseEntity.ok(connectionService.getIndirectConnections(connection));
     }
 }

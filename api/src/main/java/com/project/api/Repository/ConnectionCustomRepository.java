@@ -7,6 +7,7 @@ import com.project.api.Entity.SearchParameters;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.*;
+import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -69,11 +70,11 @@ public class ConnectionCustomRepository {
     }
 
     // Calculate the possible connections, such as 1-stop, 2-stop
-    public List<List<List<Connection>>> findIndirectConnections(String startCity, String endCity) {
+    public List<List<List<Connection>>> findIndirectConnections(SearchParameters searchParameters) {
         // Find all connections from startCity to any city, beginning of iteration
         String leg1Query = "SELECT c FROM Connection c WHERE c.departureCity = :startCity";
         List<Connection> leg1List = entityManager.createQuery(leg1Query, Connection.class)
-                .setParameter("startCity", startCity)
+                .setParameter("startCity", searchParameters.getDepartureCity())
                 .getResultList();
 
         List<List<Connection>> oneStopConnections = new ArrayList<>();
@@ -84,7 +85,7 @@ public class ConnectionCustomRepository {
             String leg2Query = "SELECT c FROM Connection c WHERE c.departureCity = :transitCity AND c.arrivalCity = :endCity AND c.departureTime > :prevArrival";
             List<Connection> leg2List = entityManager.createQuery(leg2Query, Connection.class)
                     .setParameter("transitCity", leg1.getArrivalCity())
-                    .setParameter("endCity", endCity)
+                    .setParameter("endCity", searchParameters.getArrivalCity())
                     .setParameter("prevArrival", leg1.getArrivalTime())
                     .getResultList();
 
@@ -105,7 +106,7 @@ public class ConnectionCustomRepository {
             String leg2Query = "SELECT c FROM Connection c WHERE c.departureCity = :transitCity1 AND c.arrivalCity != :endCity AND c.departureTime > :prevArrival1";
             List<Connection> leg2List = entityManager.createQuery(leg2Query, Connection.class)
                     .setParameter("transitCity1", leg1.getArrivalCity())
-                    .setParameter("endCity", endCity)
+                    .setParameter("endCity", searchParameters.getArrivalCity())
                     .setParameter("prevArrival1", leg1.getArrivalTime())
                     .getResultList();
 
@@ -116,7 +117,7 @@ public class ConnectionCustomRepository {
                     String leg3Query = "SELECT c FROM Connection c WHERE c.departureCity = :transitCity2 AND c.arrivalCity = :endCity AND c.departureTime > :prevArrival2";
                     List<Connection> leg3List = entityManager.createQuery(leg3Query, Connection.class)
                             .setParameter("transitCity2", leg2.getArrivalCity())
-                            .setParameter("endCity", endCity)
+                            .setParameter("endCity", searchParameters.getArrivalCity())
                             .setParameter("prevArrival2", leg2.getArrivalTime())
                             .getResultList();
 
