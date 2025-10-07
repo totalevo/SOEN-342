@@ -8,4 +8,5 @@ export interface Connection {
   daysOfOperation: string;
   firstClassRate: number;
   secondClassRate: number;
+  durationMinutes: number;
 }

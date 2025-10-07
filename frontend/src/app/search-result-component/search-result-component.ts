@@ -1,16 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { Connection } from '../models/Connection.model';
+import { CommonModule } from '@angular/common';
 import { ApiConnectorService } from '../services/api-connector.service';
 
 @Component({
   selector: 'app-search-result-component',
-  imports: [],
-  styleUrl: './search-result-component.css',
-  template:`
-
-  <h3>Search Results</h3>
-  <div class="result-item">
-    @for (result of results; track result.connectionId; let i = $index) {
+  styleUrls: ['./search-result-component.css'],
+  imports: [CommonModule],
+  template: `
+    <h3>Search Results</h3>
+    <div *ngIf="results.length === 0">
+      No connections found.
+    </div>
+    <div *ngIf="results.length > 0" class="result-item">
+      <ng-container *ngFor="let result of results; let i = index; trackBy: trackByConnectionId">
         <h4>Result {{ i + 1 }}</h4>
         <p><strong>Arrival City:</strong> {{ result.arrivalCity }}</p>
         <p><strong>Departure City:</strong> {{ result.departureCity }}</p>
@@ -22,17 +25,19 @@ import { ApiConnectorService } from '../services/api-connector.service';
         <p><strong>Second Class Rate:</strong> {{ result.secondClassRate }}</p>
         <p><strong>Duration (Minutes):</strong> {{ result.durationMinutes }}</p>
         <hr>
-    }  
-  </div>
-  `,
+      </ng-container>
+    </div>
+  `
 })
-export class SearchResultComponent implements OnInit{
-  results: any[] = [];
+export class SearchResultComponent implements OnInit {
+  results: Connection[] = [];
   constructor(private apiConnectorService: ApiConnectorService) {}
   ngOnInit() {
     this.apiConnectorService.results$.subscribe(data => {
       this.results = data;
-      console.log(this.results);
-    })
+    });
+  }
+  trackByConnectionId(index: number, item: Connection) {
+    return item.connectionId;
   }
 }

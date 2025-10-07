@@ -51,6 +51,7 @@ export class ExcelReaderComponent {
           daysOfOperation: row['Days of Operation'] ?? '',
           firstClassRate: Number(row['First Class ticket rate (in euro)']) || 0,
           secondClassRate: Number(row['Second Class ticket rate (in euro)']) || 0,
+          durationMinutes: 0
         }));
 
         console.log('Parsed Connections:', this.connections);

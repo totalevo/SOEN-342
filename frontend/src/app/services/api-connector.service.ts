@@ -23,7 +23,10 @@ export class ApiConnectorService {
         this.resultsSubject.next(results);
       });
   }
-  getIndirectConnections(from: string, to: string): Observable<Connection[][]> {
-    return this.http.get<Connection[][]>(`/api/connections/indirect?from=${from}&to=${to}`);
+  searchIndirectConnections(searchParameters: SearchParameters): void {
+    this.http.post<any[]>(this.apiUrl + 'api/connections/indirect', searchParameters)
+      .subscribe(results => {
+        this.resultsSubject.next(results);
+      });
   }
 }

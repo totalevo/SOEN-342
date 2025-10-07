@@ -59,17 +59,27 @@ export class SearchComponent {
       bitmapDays: this.buildDaysBitmap(),
       duration: Number(this.applyForm.value.duration) || null,
     };
-    console.log(this.searchParameters);
+
+    // Direct search first
     this.apiConnectorService.searchForConnections(this.searchParameters);
+
+    // Listen for direct results, fallback to indirect if empty
+    const subscription = this.apiConnectorService.results$.subscribe(results => {
+    if (!results || results.length === 0) {
+      // No direct connections found, now search for indirect (1-stop and 2-stop)
+      this.apiConnectorService.searchIndirectConnections(this.searchParameters);
+    }
+    });
   }
 
+
   buildDaysBitmap(): number {
-  let bitmap = 0;
-  for (const day of Object.keys(this.DAY_MASKS) as Array<keyof typeof this.DAY_MASKS>) {
-    if (this.applyForm.get(day)?.value) {
-      bitmap |= this.DAY_MASKS[day];
+    let bitmap = 0;
+    for (const day of Object.keys(this.DAY_MASKS) as Array<keyof typeof this.DAY_MASKS>) {
+      if (this.applyForm.get(day)?.value) {
+        bitmap |= this.DAY_MASKS[day];
+      }
     }
+    return bitmap;
   }
-  return bitmap;
-}
 }
