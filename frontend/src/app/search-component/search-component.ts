@@ -1,16 +1,25 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { SearchParameters } from '../models/SearchParameters.model';
 import { ApiConnectorService } from '../services/api-connector.service';
+import { SearchResultComponent } from '../search-result-component/search-result-component';
+import { IndirectResultComponent } from '../indirect-result-component/indirect-result-component';
+import { firstValueFrom } from 'rxjs';
+
 
 @Component({
   selector: 'app-search-component',
-  imports: [ReactiveFormsModule],
-  templateUrl: './search-component.html',
+  imports: [ReactiveFormsModule, IndirectResultComponent, CommonModule, SearchResultComponent],
+  templateUrl:  './search-component.html',
   styleUrl: './search-component.css'
 })
 export class SearchComponent {
   searchParameters!: SearchParameters;
+  directResults: any[] = [];
+  indirectRoutes: any[][] = [];
+  showDirect: boolean = true;
+  showIndirect: boolean = false;
   constructor(private apiConnectorService: ApiConnectorService) {}
 
   DAY_MASKS = {
@@ -44,34 +53,62 @@ export class SearchComponent {
     duration: new FormControl(''),
   });
 
-  submitApplication() {
-    this.searchParameters = {
-      connectionId: null,
-      arrivalCity: this.applyForm.value.arrivalCity || null,
-      departureCity: this.applyForm.value.departureCity || null,
-      departureTime: this.applyForm.value.departureTime || null,
-      arrivalTime: this.applyForm.value.arrivalTime || null,
-      trainType: this.applyForm.value.trainType || null,
-      firstClassRate: Number(this.applyForm.value.firstClassRate) || null,
-      secondClassRate: Number(this.applyForm.value.secondClassRate) || null,
-      sortBy: this.applyForm.value.sortBy || null,
-      sortOrder: this.applyForm.value.sortOrder || null,
-      bitmapDays: this.buildDaysBitmap(),
-      duration: Number(this.applyForm.value.duration) || null,
-    };
+  async submitApplication() {
+  this.searchParameters = {
+    connectionId: null,
+    arrivalCity: this.applyForm.value.arrivalCity || null,
+    departureCity: this.applyForm.value.departureCity || null,
+    departureTime: this.applyForm.value.departureTime || null,
+    arrivalTime: this.applyForm.value.arrivalTime || null,
+    trainType: this.applyForm.value.trainType || null,
+    firstClassRate: Number(this.applyForm.value.firstClassRate) || null,
+    secondClassRate: Number(this.applyForm.value.secondClassRate) || null,
+    sortBy: this.applyForm.value.sortBy || null,
+    sortOrder: this.applyForm.value.sortOrder || null,
+    bitmapDays: this.buildDaysBitmap(),
+    duration: Number(this.applyForm.value.duration) || null,
+  };
 
-    // Direct search first
-    this.apiConnectorService.searchForConnections(this.searchParameters);
+  this.showDirect = false;
+  this.showIndirect = false;
+  this.directResults = [];
+  this.indirectRoutes = [];
 
-    // Listen for direct results, fallback to indirect if empty
-    const subscription = this.apiConnectorService.results$.subscribe(results => {
-    if (!results || results.length === 0) {
-      // No direct connections found, now search for indirect (1-stop and 2-stop)
-      this.apiConnectorService.searchIndirectConnections(this.searchParameters);
-    }
-    });
+  // Direct API call
+  this.apiConnectorService.searchForConnections(this.searchParameters);
+  const directResults = await firstValueFrom(this.apiConnectorService.results$);
+
+  if (Array.isArray(directResults) && directResults.length > 0) {
+    this.directResults = directResults;
+    this.showDirect = true;
+    this.showIndirect = false;
+    return; // Only display direct, do not attempt indirect
   }
 
+  // Indirect API call only if both cities present and direct not found
+  if (this.searchParameters.departureCity && this.searchParameters.arrivalCity) {
+    this.apiConnectorService.searchIndirectConnections(this.searchParameters);
+    const indirectResults = await firstValueFrom(this.apiConnectorService.results$);
+    
+    // DEBUG
+    console.log('Indirect API response:', indirectResults);
+
+    if (Array.isArray(indirectResults) && indirectResults.length > 0 && Array.isArray(indirectResults[0])) {
+      this.indirectRoutes = indirectResults;
+      this.showDirect = false;
+      this.showIndirect = true; 
+    } else {
+      this.indirectRoutes = [];
+      this.showDirect = false;
+      this.showIndirect = true;
+    }
+  } else {
+    this.directResults = [];
+    this.showDirect = false;
+    this.indirectRoutes = [];
+    this.showIndirect = false;
+  }
+}
 
   buildDaysBitmap(): number {
     let bitmap = 0;

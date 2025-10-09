@@ -4,7 +4,7 @@ import { SearchResultComponent } from '../search-result-component/search-result-
 
 @Component({
   selector: 'app-search-page-component',
-  imports: [SearchComponent, SearchResultComponent],
+  imports: [SearchComponent],
   templateUrl: './search-page-component.html',
   styleUrl: './search-page-component.css'
 })

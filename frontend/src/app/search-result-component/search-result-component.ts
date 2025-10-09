@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Connection } from '../models/Connection.model';
 import { CommonModule } from '@angular/common';
 import { ApiConnectorService } from '../services/api-connector.service';
@@ -7,6 +7,7 @@ import { ApiConnectorService } from '../services/api-connector.service';
   selector: 'app-search-result-component',
   styleUrls: ['./search-result-component.css'],
   imports: [CommonModule],
+  standalone: true,
   template: `
     <h3>Search Results</h3>
     <div *ngIf="results.length === 0">
@@ -30,7 +31,7 @@ import { ApiConnectorService } from '../services/api-connector.service';
   `
 })
 export class SearchResultComponent implements OnInit {
-  results: Connection[] = [];
+  @Input() results: Connection[] = [];
   constructor(private apiConnectorService: ApiConnectorService) {}
   ngOnInit() {
     this.apiConnectorService.results$.subscribe(data => {

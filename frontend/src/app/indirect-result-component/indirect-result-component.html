@@ -1,1 +1,22 @@
-<p>indirect-result-component works!</p>
+<h3>Indirect Connections</h3>
+<div *ngIf="!journeys || journeys.length === 0">
+  No indirect connections found.
+</div>
+<div *ngFor="let route of journeys; let i = index" class="indirect-journey">
+  <h4>Route {{ i + 1 }} <span *ngIf="route.length-1 > 0">({{route.length-1}}-stop)</span></h4>
+  <ng-container *ngFor="let leg of route; let j = index">
+    <div class="indirect-leg">
+      <p><strong>Leg {{j+1}}</strong></p>
+      <p><strong>Departure City:</strong> {{ leg.departureCity }}</p>
+      <p><strong>Arrival City:</strong> {{ leg.arrivalCity }}</p>
+      <p><strong>Departure Time:</strong> {{ leg.departureTime }}</p>
+      <p><strong>Arrival Time:</strong> {{ leg.arrivalTime }}</p>
+      <p><strong>Train Type:</strong> {{ leg.trainType }}</p>
+      <p><strong>Days of Operation:</strong> {{ leg.daysOfOperation }}</p>
+      <p><strong>First Class Rate:</strong> {{ leg.firstClassRate }}</p>
+      <p><strong>Second Class Rate:</strong> {{ leg.secondClassRate }}</p>
+      <p><strong>Duration (Minutes):</strong> {{ leg.durationMinutes }}</p>
+    </div>
+    <hr>
+  </ng-container>
+</div>
