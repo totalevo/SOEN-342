@@ -77,6 +77,15 @@ public class ConnectionCustomRepository {
                 .setParameter("startCity", searchParameters.getDepartureCity())
                 .getResultList();
 
+
+        // DEBUG for Leg1
+        System.out.println("Leg1 list (from " + searchParameters.getDepartureCity() + "): " + leg1List.size());
+        for (Connection leg1 : leg1List) {
+            System.out.println("  Leg1: " + leg1.getDepartureCity() + " -> " + leg1.getArrivalCity() + " (" + leg1.getConnectionId() + ")");
+        }
+
+
+
         List<List<Connection>> oneStopConnections = new ArrayList<>();
         List<List<Connection>> twoStopConnections = new ArrayList<>();
 
@@ -88,6 +97,13 @@ public class ConnectionCustomRepository {
                     .setParameter("endCity", searchParameters.getArrivalCity())
                     .setParameter("prevArrival", leg1.getArrivalTime())
                     .getResultList();
+
+            // DEBUG for Leg2
+            System.out.println("    For Leg1: " + leg1.getDepartureCity() + "->" + leg1.getArrivalCity() + " (" + leg1.getConnectionId() + ")");
+            System.out.println("      Leg2 candidates count: " + leg2List.size());
+            for (Connection leg2 : leg2List) {
+                System.out.println("        Leg2: " + leg2.getDepartureCity() + "->" + leg2.getArrivalCity() + " (" + leg2.getConnectionId() + ")");
+            }
 
             for (Connection leg2 : leg2List) {
                 // To avoid cycles
