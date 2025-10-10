@@ -1,0 +1,70 @@
+<h3>Indirect Connections</h3>
+<label>
+    <input type="checkbox" [(ngModel)]="show2Legs" />
+    Show two leg trip
+</label>
+<label>
+    <input type="checkbox" [(ngModel)]="show3Legs" />
+    Show three leg trip
+</label>
+@if (show2Legs) {
+  <h2><strong>Two Leg Trips</strong></h2>
+  @for (trip of journeys[0]; track $index) {
+  <h3>Trip {{$index + 1}}</h3>
+  <div class="trip-container">
+    @for (leg of trip.connections; track $index) {
+      <div class="trip-item">
+        <p><strong>Leg {{ $index + 1 }}</strong></p>
+          <p><strong>Departure City:</strong> {{ leg.departureCity }}</p>
+          <p><strong>Arrival City:</strong> {{ leg.arrivalCity }}</p>
+          <p><strong>Departure Time:</strong> {{ leg.departureTime }}</p>
+          <p><strong>Arrival Time:</strong> {{ leg.arrivalTime }}</p>
+          <p><strong>Train Type:</strong> {{ leg.trainType }}</p>
+          <p><strong>Days of Operation:</strong> {{ leg.daysOfOperation }}</p>
+          <p><strong>First Class Rate:</strong> {{ leg.firstClassRate }}</p>
+          <p><strong>Second Class Rate:</strong> {{ leg.secondClassRate }}</p>
+          <p><strong>Duration (Minutes):</strong> {{ leg.durationMinutes }}</p>
+      </div>
+    }
+    <div class="trip-item">
+      <p><Strong>Trip Information:</Strong></p>
+      <p><strong>Time between Connections: </strong>{{trip.timeBetweenConnections}}</p>
+      <p><strong>Total Duration: </strong>{{trip.totalDuration}}</p>
+      <p><strong>Total First Class Rate: </strong>{{trip.totalFirstClassRate}}</p>
+      <p><strong>Total Second Class Rate: </strong>{{trip.totalSecondClassRate}}</p>
+    </div>
+    
+  </div>
+}
+}
+@if (show3Legs) {
+  <h2><strong>Three Leg Trips</strong></h2>
+  @for (trip of journeys[1]; track $index) {
+  <h3>Trip {{$index + 1}}</h3>
+  <div class="trip-container">
+    @for (leg of trip.connections; track $index) {
+      <div class="trip-item">
+        <p><strong>Leg {{ $index + 1 }}</strong></p>
+          <p><strong>Departure City:</strong> {{ leg.departureCity }}</p>
+          <p><strong>Arrival City:</strong> {{ leg.arrivalCity }}</p>
+          <p><strong>Departure Time:</strong> {{ leg.departureTime }}</p>
+          <p><strong>Arrival Time:</strong> {{ leg.arrivalTime }}</p>
+          <p><strong>Train Type:</strong> {{ leg.trainType }}</p>
+          <p><strong>Days of Operation:</strong> {{ leg.daysOfOperation }}</p>
+          <p><strong>First Class Rate:</strong> {{ leg.firstClassRate }}</p>
+          <p><strong>Second Class Rate:</strong> {{ leg.secondClassRate }}</p>
+          <p><strong>Duration (Minutes):</strong> {{ leg.durationMinutes }}</p>
+      </div>
+    }
+    <div class="trip-item">
+      <p><Strong>Trip Information:</Strong></p>
+      <p><strong>Time between Connections: </strong>{{trip.timeBetweenConnections}}</p>
+      <p><strong>Total Duration: </strong>{{trip.totalDuration}}</p>
+      <p><strong>Total First Class Rate: </strong>{{trip.totalFirstClassRate}}</p>
+      <p><strong>Total Second Class Rate: </strong>{{trip.totalSecondClassRate}}</p>
+    </div>
+    
+  </div>
+}
+}
+

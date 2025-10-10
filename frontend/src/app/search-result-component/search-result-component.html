@@ -1,0 +1,10 @@
+<h3>Search Results</h3>
+<div *ngIf="results.length === 0">
+  No connections found.
+</div>
+<div *ngFor="let result of results; let i = index">
+  <h4>Result {{ i + 1 }}</h4>
+  <p><strong>Arrival City:</strong> {{ result.arrivalCity }}</p>
+  <p><strong>Departure City:</strong> {{ result.departureCity }}</p>
+  <!-- ...other result fields... -->
+</div>
