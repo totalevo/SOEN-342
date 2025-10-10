@@ -1,6 +1,7 @@
 package com.project.api.Controller;
 
 import com.project.api.Entity.Connection;
+import com.project.api.Entity.IndirectResultContext;
 import com.project.api.Entity.SearchParameters;
 import com.project.api.Repository.ConnectionRepository;
 import com.project.api.Service.ConnectionService;
@@ -40,7 +41,7 @@ public class ConnectionController {
 
     // Returns a list with [1-stops list, 2-stops list]
     @PostMapping("/indirect")
-    public ResponseEntity<List<List<List<Connection>>>> getIndirectConnections(@RequestBody SearchParameters connection) {
+    public ResponseEntity<List<List<IndirectResultContext>>> getIndirectConnections(@RequestBody SearchParameters connection) {
         return ResponseEntity.ok(connectionService.searchIndirectConnections(connection));
     }
 }

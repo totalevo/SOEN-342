@@ -75,9 +75,7 @@ export class SearchComponent {
   this.indirectRoutes = [];
 
   // Direct API call
-  this.apiConnectorService.searchForConnections(this.searchParameters);
-  const directResults = await firstValueFrom(this.apiConnectorService.results$);
-
+  const directResults = await firstValueFrom(this.apiConnectorService.searchForConnections(this.searchParameters));
   if (Array.isArray(directResults) && directResults.length > 0) {
     this.directResults = directResults;
     this.showDirect = true;
@@ -87,11 +85,9 @@ export class SearchComponent {
 
   // Indirect API call only if both cities present and direct not found
   if (this.searchParameters.departureCity && this.searchParameters.arrivalCity) {
-    this.apiConnectorService.searchIndirectConnections(this.searchParameters);
-    const indirectResults = await firstValueFrom(this.apiConnectorService.results$);
+    const indirectResults = await firstValueFrom(this.apiConnectorService.searchIndirectConnections(this.searchParameters));
     
     // DEBUG
-    console.log('Indirect API response:', indirectResults);
 
     if (Array.isArray(indirectResults) && indirectResults.length > 0 && Array.isArray(indirectResults[0])) {
       this.indirectRoutes = indirectResults;

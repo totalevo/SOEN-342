@@ -3,6 +3,7 @@ package com.project.api.Service;
 import com.project.api.Class.ConnectionDuration;
 import com.project.api.Class.DaysBitMap;
 import com.project.api.Entity.Connection;
+import com.project.api.Entity.IndirectResultContext;
 import com.project.api.Entity.SearchParameters;
 import com.project.api.Repository.ConnectionCustomRepository;
 
@@ -56,7 +57,7 @@ public class ConnectionService {
     }
 
     // CHANGED: return type for indirect connections
-    public List<List<List<Connection>>> searchIndirectConnections(SearchParameters searchParameters) {
+    public List<List<IndirectResultContext>> searchIndirectConnections(SearchParameters searchParameters) {
         return connectionCustomRepository.findIndirectConnections(searchParameters);
     }
 }

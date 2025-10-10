@@ -3,6 +3,7 @@ package com.project.api.Repository;
 import com.project.api.Class.ConnectionDuration;
 import com.project.api.Class.DaysBitMap;
 import com.project.api.Entity.Connection;
+import com.project.api.Entity.IndirectResultContext;
 import com.project.api.Entity.SearchParameters;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 
 import static com.project.api.Class.DaysBitMap.operatesOnDay;
 
@@ -70,7 +72,7 @@ public class ConnectionCustomRepository {
     }
 
     // Calculate the possible connections, such as 1-stop, 2-stop
-    public List<List<List<Connection>>> findIndirectConnections(SearchParameters searchParameters) {
+    public List<List<IndirectResultContext>> findIndirectConnections(SearchParameters searchParameters) {
         // Find all connections from startCity to any city, beginning of iteration
         String leg1Query = "SELECT c FROM Connection c WHERE c.departureCity = :startCity";
         List<Connection> leg1List = entityManager.createQuery(leg1Query, Connection.class)
@@ -150,11 +152,75 @@ public class ConnectionCustomRepository {
                 }
             }
         }
+        List<IndirectResultContext> oneStopResults = new ArrayList<>();
+        for (List<Connection> connectionList : oneStopConnections) {
+
+            int[] timeBetweenConnections = new int[connectionList.size() - 1];
+            for (int i = 0; i < connectionList.size() - 1; i++) {
+                String arrivalTime = connectionList.get(i).getArrivalTime();
+                if (arrivalTime.contains("(+1d)")) {
+                    arrivalTime = arrivalTime.replaceAll("\\(\\+1d(ay)?\\)", "").trim();
+                }
+                String[] arrivalParts = arrivalTime.split(":");
+                String[] departureParts = connectionList.get(i + 1).getDepartureTime().split(":");
+                timeBetweenConnections[i] = ConnectionDuration.getTotalMinutes(arrivalParts, departureParts);
+            }
+            int totalDuration = connectionList.stream().mapToInt(Connection::getDurationMinutes).sum() + Arrays.stream(timeBetweenConnections).sum();
+            int totalFirstClassRate = connectionList.stream().mapToInt(c -> c.getFirstClassRate().intValue()).sum();
+            int totalSecondClassRate = connectionList.stream().mapToInt(c -> c.getSecondClassRate().intValue()).sum();
+            oneStopResults.add(new IndirectResultContext(connectionList, totalDuration, timeBetweenConnections, totalFirstClassRate, totalSecondClassRate));
+        }
+        List<IndirectResultContext> twoStopResults = new ArrayList<>();
+        for (List<Connection> connectionList : twoStopConnections) {
+            int[] timeBetweenConnections = new int[connectionList.size() - 1];
+            for (int i = 0; i < connectionList.size() - 1; i++) {
+                String arrivalTime = connectionList.get(i).getArrivalTime();
+                if (arrivalTime.contains("(+1d)")) {
+                    arrivalTime = arrivalTime.replaceAll("\\(\\+1d(ay)?\\)", "").trim();
+                }
+                String[] arrivalParts = arrivalTime.split(":");
+                String[] departureParts = connectionList.get(i + 1).getDepartureTime().split(":");
+                timeBetweenConnections[i] = ConnectionDuration.getTotalMinutes(arrivalParts, departureParts);
+            }
+            int totalDuration = connectionList.stream().mapToInt(Connection::getDurationMinutes).sum() + Arrays.stream(timeBetweenConnections).sum();
+            int totalFirstClassRate = connectionList.stream().mapToInt(c -> c.getFirstClassRate().intValue()).sum();
+            int totalSecondClassRate = connectionList.stream().mapToInt(c -> c.getSecondClassRate().intValue()).sum();
+            twoStopResults.add(new IndirectResultContext(connectionList, totalDuration, timeBetweenConnections, totalFirstClassRate, totalSecondClassRate));
+        }
+
+        if (searchParameters.getSortBy() != null && searchParameters.getSortOrder() != null) {
+            if (searchParameters.getSortBy().equals("durationMinutes")) {
+                if (searchParameters.getSortOrder().equals("asc")) {
+                    oneStopResults.sort((a, b) -> Integer.compare(a.getTotalDuration(), b.getTotalDuration()));
+                    twoStopResults.sort((a, b) -> Integer.compare(a.getTotalDuration(), b.getTotalDuration()));
+                } else {
+                    oneStopResults.sort((a, b) -> Integer.compare(b.getTotalDuration(), a.getTotalDuration()));
+                    twoStopResults.sort((a, b) -> Integer.compare(b.getTotalDuration(), a.getTotalDuration()));
+                }
+            } else if (searchParameters.getSortBy().equals("firstClassRate")) {
+                if (searchParameters.getSortOrder().equals("asc")) {
+                    oneStopResults.sort((a, b) -> Integer.compare(a.getTotalFirstClassRate(), b.getTotalFirstClassRate()));
+                    twoStopResults.sort((a, b) -> Integer.compare(a.getTotalFirstClassRate(), b.getTotalFirstClassRate()));
+                } else {
+                    oneStopResults.sort((a, b) -> Integer.compare(b.getTotalFirstClassRate(), a.getTotalFirstClassRate()));
+                    twoStopResults.sort((a, b) -> Integer.compare(b.getTotalFirstClassRate(), a.getTotalFirstClassRate()));
+                }
+            } else if (searchParameters.getSortBy().equals("secondClassRate")) {
+                if (searchParameters.getSortOrder().equals("asc")) {
+                    oneStopResults.sort((a, b) -> Integer.compare(a.getTotalSecondClassRate(), b.getTotalSecondClassRate()));
+                    twoStopResults.sort((a, b) -> Integer.compare(a.getTotalSecondClassRate(), b.getTotalSecondClassRate()));
+                } else {
+                    oneStopResults.sort((a, b) -> Integer.compare(b.getTotalSecondClassRate(), a.getTotalSecondClassRate()));
+                    twoStopResults.sort((a, b) -> Integer.compare(b.getTotalSecondClassRate(), a.getTotalSecondClassRate()));
+                }
+            }
+        }
 
         // Return result with 1-stop at index 0 and 2-stop at index 1
-        List<List<List<Connection>>> result = new ArrayList<>();
-        result.add(oneStopConnections);
-        result.add(twoStopConnections);
+        List<List<IndirectResultContext>> result = new ArrayList<>();
+
+        result.add(oneStopResults);
+        result.add(twoStopResults);
 
         return result;
     }

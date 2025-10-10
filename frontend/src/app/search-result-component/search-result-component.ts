@@ -34,9 +34,9 @@ export class SearchResultComponent implements OnInit {
   @Input() results: Connection[] = [];
   constructor(private apiConnectorService: ApiConnectorService) {}
   ngOnInit() {
-    this.apiConnectorService.results$.subscribe(data => {
-      this.results = data;
-    });
+    // this.apiConnectorService.results$.subscribe(data => {
+    //   this.results = data;
+    // });
   }
   trackByConnectionId(index: number, item: Connection) {
     return item.connectionId;
