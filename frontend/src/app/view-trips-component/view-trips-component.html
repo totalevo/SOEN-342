@@ -1,4 +1,39 @@
-<mat-card>
-  <h2>View Trips</h2>
-  <p>This page will list/search trips. We’ll build it next.</p>
-</mat-card>
+<h2>View Trips</h2>
+
+  <form [formGroup]="form" (ngSubmit)="onSearch()">
+    <mat-form-field appearance="outline">
+        <mat-label>Last name</mat-label>
+        <input matInput formControlName="lastName" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+        <mat-label>ID</mat-label>
+        <input matInput formControlName="travellerId" />
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="button" (click)="onSearch()">
+        Search
+    </button>
+
+    <div *ngIf="showError" style="color: red; margin-top: 10px;">
+        Please fill in BOTH fields before searching.
+    </div>
+</form>
+
+<!-- Handle loading/ error / empty states of fields -->
+<div *ngIf="loading" style="margin-top: 12px;">Loading trips…</div>
+<div *ngIf="serverError" style="color: red; margin-top: 12px;">{{ serverError }}</div>
+<div *ngIf="!loading && !serverError && trips.length === 0" style="margin-top: 12px;">
+    No trips found.
+</div>
+
+<!-- Very small preview of results (more later) -->
+<div *ngIf="!loading && !serverError && trips.length > 0" style="margin-top: 12px;">
+  <div style="font-weight: 600; margin-bottom: 6px;">Found {{ trips.length }} trip(s)</div>
+
+  <ul style="padding-left: 16px;">
+    <li *ngFor="let t of trips; let i = index">
+        Trip #{{ i + 1 }} — connections: {{ t.connections.length || 0 }}, travellers: {{ t.travellers.length || 0 }}
+    </li>
+  </ul>
+</div>
