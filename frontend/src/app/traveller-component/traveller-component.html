@@ -1,0 +1,14 @@
+<p>traveller-component works!</p>
+<label>Name: </label>
+<input id="name" type="text" [formControl]="name">
+<label>Age: </label>
+<input id="age" type="text" [formControl]="age">
+<label>Id: </label>
+<input id="id" type="text" [formControl]="id">
+<br>
+<button (click)="saveTraveller()">
+    Save traveller
+</button>
+<button (click)="createNewTab()">
+    Add traveller
+</button>

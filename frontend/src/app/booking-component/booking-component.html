@@ -1,0 +1,35 @@
+@if (connections.length == 0) {
+    <p>Select a trip from Search for a connections</p>
+} @else {
+    <p>Book your trip</p>
+    <h3>Current Trip</h3>
+    @for (leg of connections; track $index) {
+      <div class="trip-item">
+        <p><strong>Leg {{ $index + 1 }}</strong></p>
+          <p><strong>Departure City:</strong> {{ leg.departureCity }}</p>
+          <p><strong>Arrival City:</strong> {{ leg.arrivalCity }}</p>
+          <p><strong>Departure Time:</strong> {{ leg.departureTime }}</p>
+          <p><strong>Arrival Time:</strong> {{ leg.arrivalTime }}</p>
+          <p><strong>Train Type:</strong> {{ leg.trainType }}</p>
+          <p><strong>Days of Operation:</strong> {{ leg.daysOfOperation }}</p>
+          <p><strong>First Class Rate:</strong> {{ leg.firstClassRate }}</p>
+          <p><strong>Second Class Rate:</strong> {{ leg.secondClassRate }}</p>
+          <p><strong>Duration (Minutes):</strong> {{ leg.durationMinutes }}</p>
+      </div>
+    }
+
+    <mat-tab-group dynamicHeight>
+        <mat-tab label="Traveller 1">
+            <div class="example-small-box mat-elevation-z4"><app-traveller-component (addTab)="onAddTab($event)"></app-traveller-component></div>
+        </mat-tab>
+        @for (traveller of travellers; track $index) {
+            <mat-tab label="Traveller {{$index + 2}}">
+            <div class="example-small-box mat-elevation-z4"><app-traveller-component (addTab)="onAddTab($event)"></app-traveller-component></div>
+        </mat-tab>
+        }
+    </mat-tab-group>
+
+    <button (click)="bookTrip()">
+        Book Trip
+    </button>
+}

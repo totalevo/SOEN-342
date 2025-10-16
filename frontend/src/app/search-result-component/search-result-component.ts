@@ -2,6 +2,8 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Connection } from '../models/Connection.model';
 import { CommonModule } from '@angular/common';
 import { ApiConnectorService } from '../services/api-connector.service';
+import { Router } from '@angular/router';
+import { BookingService } from '../services/booking.service';
 
 @Component({
   selector: 'app-search-result-component',
@@ -25,6 +27,9 @@ import { ApiConnectorService } from '../services/api-connector.service';
         <p><strong>First Class Rate:</strong> {{ result.firstClassRate }}</p>
         <p><strong>Second Class Rate:</strong> {{ result.secondClassRate }}</p>
         <p><strong>Duration (Minutes):</strong> {{ result.durationMinutes }}</p>
+        <button mat-raised-button color="primary" (click)="goToBooking(result)">
+          Go to Booking
+        </button>
         <hr>
       </ng-container>
     </div>
@@ -32,7 +37,12 @@ import { ApiConnectorService } from '../services/api-connector.service';
 })
 export class SearchResultComponent implements OnInit {
   @Input() results: Connection[] = [];
-  constructor(private apiConnectorService: ApiConnectorService) {}
+  constructor(
+    private apiConnectorService: ApiConnectorService,
+    private router: Router,
+    private bookingService: BookingService,
+) {}
+    
   ngOnInit() {
     // this.apiConnectorService.results$.subscribe(data => {
     //   this.results = data;
@@ -40,5 +50,10 @@ export class SearchResultComponent implements OnInit {
   }
   trackByConnectionId(index: number, item: Connection) {
     return item.connectionId;
+  }
+
+  goToBooking(connection: Connection) {
+    this.bookingService.setConnections([connection]);
+    this.router.navigate(['booking']);
   }
 }

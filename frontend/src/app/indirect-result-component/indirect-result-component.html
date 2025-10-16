@@ -32,6 +32,9 @@
       <p><strong>Total Duration: </strong>{{trip.totalDuration}}</p>
       <p><strong>Total First Class Rate: </strong>{{trip.totalFirstClassRate}}</p>
       <p><strong>Total Second Class Rate: </strong>{{trip.totalSecondClassRate}}</p>
+      <button mat-raised-button color="primary" (click)="goToBooking(trip.connections)">
+          Go to Booking
+      </button>
     </div>
     
   </div>
@@ -62,6 +65,9 @@
       <p><strong>Total Duration: </strong>{{trip.totalDuration}}</p>
       <p><strong>Total First Class Rate: </strong>{{trip.totalFirstClassRate}}</p>
       <p><strong>Total Second Class Rate: </strong>{{trip.totalSecondClassRate}}</p>
+    <button mat-raised-button color="primary" (click)="goToBooking(trip.connections)">
+          Go to Booking
+        </button>
     </div>
     
   </div>
