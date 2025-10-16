@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [MatTabsModule, ExcelReaderComponent, SearchPageComponent, RouterModule],
+  imports: [MatTabsModule, RouterModule],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })

@@ -12,7 +12,7 @@ import { TravellerComponent } from '../traveller-component/traveller-component';
   selector: 'app-booking-component',
   imports: [MatTabsModule, TravellerComponent],
   templateUrl: './booking-component.html',
-  styleUrl: './booking-component.css'
+  styleUrl: './booking-component.css',
 })
 export class BookingComponent  implements OnInit {
   connections: Connection[] = [];
