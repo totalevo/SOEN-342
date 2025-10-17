@@ -13,7 +13,9 @@ import java.util.List;
 @NoArgsConstructor
 public class TripDTO {
 
-    private List<Connection> connections;
 
+    private List<Connection> connections;
     private List<Traveller> travellers;
+    private String tripStatus;
+
 }
