@@ -2,13 +2,12 @@ package com.project.api.Service;
 
 import com.project.api.Class.TripDTO;
 import com.project.api.Entity.*;
-import com.project.api.Repository.ReservationRepository;
-import com.project.api.Repository.TicketRepository;
-import com.project.api.Repository.TravellerRepository;
-import com.project.api.Repository.TripRepository;
+import com.project.api.Repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
+import java.util.stream.Collectors;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,18 +66,60 @@ public class TripService {
 
 
     }
+
+    // Checkup that a traveller does not book the same connection twice
     public boolean isNewTrip(List<Connection> tripConnections, List<Connection> userConnections){
-        if(tripConnections.size()== userConnections.size()){
+        if(tripConnections.size() == userConnections.size()){
             for(int i=0;i<userConnections.size();i++){
                 if(!userConnections.get(i).getId().equals(tripConnections.get(i).getId())){
                     return true;
                 }
             }
             return false;
-
         }
         else{
             return true;
         }
     }
+
+    public List<TripDTO> searchTripsByTraveller(String travellerId, String lastName) {
+        // Validate traveller
+        Traveller traveller = travellerRepository.findById(travellerId)
+                .orElseThrow(() -> new RuntimeException("Traveller not found with id: " + travellerId));
+
+        // Verify last name matches
+        if (!traveller.getName().equalsIgnoreCase(lastName)) {
+            throw new RuntimeException("Traveller last name does not match ID");
+        }
+
+        // Find all reservations for this traveller
+        List<Reservation> reservations = reservationRepository.findAllByTravellerId(travellerId);
+        if (reservations.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        // Collect unique trips from those reservations
+        List<Trip> trips = reservations.stream()
+                .map(Reservation::getTrip)
+                .distinct()
+                .collect(Collectors.toList());
+
+        // Build TripDTOs (connections + travellers + status)
+        List<TripDTO> tripDTOs = new ArrayList<>();
+        for (Trip trip : trips) {
+            TripDTO dto = new TripDTO();
+            dto.setConnections(trip.getConnections());
+            dto.setTravellers(trip.getReservationList()
+                    .stream()
+                    .map(Reservation::getTraveller)
+                    .distinct()
+                    .collect(Collectors.toList()));
+
+            dto.setTripStatus(trip.getTripStatus());
+            tripDTOs.add(dto);
+        }
+
+        return tripDTOs;
+    }
+
 }
