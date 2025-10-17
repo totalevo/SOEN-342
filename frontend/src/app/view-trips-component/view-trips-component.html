@@ -27,13 +27,31 @@
     No trips found.
 </div>
 
-<!-- Very small preview of results (more later) -->
+<!-- Preview of results -->
 <div *ngIf="!loading && !serverError && trips.length > 0" style="margin-top: 12px;">
-  <div style="font-weight: 600; margin-bottom: 6px;">Found {{ trips.length }} trip(s)</div>
+    <div style="font-weight: 600; margin-bottom: 6px;">
+        Found {{ trips.length }} trip(s)
+    </div>
 
-  <ul style="padding-left: 16px;">
-    <li *ngFor="let t of trips; let i = index">
-        Trip #{{ i + 1 }} — connections: {{ t.connections.length || 0 }}, travellers: {{ t.travellers.length || 0 }}
-    </li>
-  </ul>
+    <ul style="padding-left: 16px; list-style-type: none;">
+        <li *ngFor="let t of trips; let i = index" style="margin-bottom: 16px; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
+            <strong>Trip #{{ i + 1 }}</strong>
+            <div>Connections: {{ t.connections.length }}</div>
+            <div>Travellers: {{ t.travellers.length }}</div>
+            <div>
+                Status:
+                <span
+                    class="trip-status"
+                    [ngClass]="{
+                    completed: t.tripStatus === 'COMPLETED',
+                    reserved: t.tripStatus === 'RESERVED',
+                    other: t.tripStatus !== 'COMPLETED' && t.tripStatus !== 'RESERVED'
+                    }"
+                >
+                    {{ t.tripStatus }}
+                </span>
+            </div>
+        </li>
+    </ul>
 </div>
+

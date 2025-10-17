@@ -47,6 +47,7 @@ export class ViewTripsComponent {
 
     this.api.searchTripsByTraveller(travellerId, lastName).subscribe({
       next: (data) => {
+        console.log('Trips response:', data);
         this.trips = Array.isArray(data) ? data : [];
         this.loading = false;
       },
