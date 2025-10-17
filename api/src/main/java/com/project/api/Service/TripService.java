@@ -40,9 +40,15 @@ public class TripService {
             travellerRepository.findById(traveller.getId()).orElseGet(()->travellerRepository.save(traveller));
             oldReservations = reservationRepository.findAllByTravellerId(traveller.getId());
             if(!oldReservations.isEmpty()){
-                for(Reservation reservation:oldReservations){
-                    if(!isNewTrip(connections,reservation.getTrip().getConnections())){
-                        throw new Exception("A traveller already has a reservation for this connection");
+                for(Reservation reservation: oldReservations){
+                    Trip existingTrip = reservation.getTrip();
+
+                    boolean sameConnections = !isNewTrip(connections, existingTrip.getConnections());
+                    boolean isReserved = existingTrip.getTripStatus() != null
+                            && existingTrip.getTripStatus().equalsIgnoreCase("RESERVED");
+
+                    if (sameConnections && isReserved) {
+                        throw new Exception("A traveller already has a RESERVED trip with the same connections");
                     }
                 }
             }
@@ -62,9 +68,6 @@ public class TripService {
         trip.setTripStatus("RESERVED");
 
         tripRepository.save(trip);
-
-
-
     }
 
     // Checkup that a traveller does not book the same connection twice
