@@ -58,4 +58,20 @@ export class ViewTripsComponent {
       },
     });
   }
+
+  endTrip(t: TripDTO): void {
+  if (t.tripStatus === 'COMPLETED') return;
+
+  this.api.completeTrip(t.tripId).subscribe({
+    next: (updated) => {
+      // reflect the change locally
+      t.tripStatus = updated.tripStatus;
+    },
+    error: (err) => {
+      console.error('completeTrip error:', err);
+      this.serverError = 'Failed to end the trip. Please try again.';
+    }
+  });
+}
+
 }

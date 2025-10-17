@@ -31,4 +31,7 @@ export class ApiConnectorService {
       name: lastName
     });
   }
+  completeTrip(tripId: string) {
+    return this.http.put<TripDTO>(this.apiUrl + `api/trip/${tripId}/complete`, {});
+  }
 }
