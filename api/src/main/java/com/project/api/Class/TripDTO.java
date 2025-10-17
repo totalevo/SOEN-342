@@ -7,13 +7,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class TripDTO {
 
-
+    private UUID tripId;
     private List<Connection> connections;
     private List<Traveller> travellers;
     private String tripStatus;

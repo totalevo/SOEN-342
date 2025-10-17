@@ -108,6 +108,7 @@ public class TripService {
         List<TripDTO> tripDTOs = new ArrayList<>();
         for (Trip trip : trips) {
             TripDTO dto = new TripDTO();
+            dto.setTripId(trip.getId());
             dto.setConnections(trip.getConnections());
             dto.setTravellers(trip.getReservationList()
                     .stream()
@@ -118,8 +119,28 @@ public class TripService {
             dto.setTripStatus(trip.getTripStatus());
             tripDTOs.add(dto);
         }
-
         return tripDTOs;
+    }
+
+    public TripDTO completeTrip(UUID tripId) {
+        Trip trip = tripRepository.findById(tripId)
+                .orElseThrow(() -> new RuntimeException("Trip not found: " + tripId));
+
+        if (!"COMPLETED".equalsIgnoreCase(trip.getTripStatus())) {
+            trip.setTripStatus("COMPLETED");
+            tripRepository.save(trip);
+        }
+
+        TripDTO dto = new TripDTO();
+        dto.setTripId(trip.getId());                         // UUID
+        dto.setConnections(trip.getConnections());
+        dto.setTravellers(trip.getReservationList()
+                .stream()
+                .map(Reservation::getTraveller)
+                .distinct()
+                .collect(Collectors.toList()));
+        dto.setTripStatus(trip.getTripStatus());
+        return dto;
     }
 
 }
