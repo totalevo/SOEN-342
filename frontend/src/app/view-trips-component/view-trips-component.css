@@ -1,0 +1,15 @@
+.trip-status {
+  font-weight: 600;
+}
+
+.trip-status.completed {
+  color: green;
+}
+
+.trip-status.reserved {
+  color: goldenrod;
+}
+
+.trip-status.other {
+  color: #666;
+}

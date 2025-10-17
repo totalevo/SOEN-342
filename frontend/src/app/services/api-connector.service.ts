@@ -26,7 +26,7 @@ export class ApiConnectorService {
     return this.http.post<any[]>(this.apiUrl + 'api/connections/indirect', searchParameters);
   }
   searchTripsByTraveller(travellerId: string, lastName: string): Observable<TripDTO[]> {
-    return this.http.post<TripDTO[]>(this.apiUrl + 'api/trips/search', {
+    return this.http.post<TripDTO[]>(this.apiUrl + 'api/trip/search', {
       id: travellerId,
       name: lastName
     });
