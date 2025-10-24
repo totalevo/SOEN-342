@@ -71,7 +71,16 @@ export class ViewTripsComponent {
       console.error('completeTrip error:', err);
       this.serverError = 'Failed to end the trip. Please try again.';
     }
-  });
-}
+    });
+  }
+
+  get currentTrips(): TripDTO[] {
+    return this.trips.filter(t => t.tripStatus === 'RESERVED');
+  }
+
+  get historyTrips(): TripDTO[] {
+    return this.trips.filter(t => t.tripStatus === 'COMPLETED');
+  }
+
 
 }

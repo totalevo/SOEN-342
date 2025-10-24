@@ -27,38 +27,90 @@
     No trips found.
 </div>
 
-<!-- Preview of results -->
-<div *ngIf="!loading && !serverError && trips.length > 0" style="margin-top: 12px;">
-    <div style="font-weight: 600; margin-bottom: 6px;">
-        Found {{ trips.length }} trip(s)
+<!-- Preview of Results -->
+<div *ngIf="!loading && !serverError && trips.length > 0" style="margin-top: 16px;">
+
+  <!-- Current Trips(RESERVED ones, we display the history ones separately) -->
+  <div>
+    <div style="font-weight: 700; margin-bottom: 8px;">
+      Current trips ({{ currentTrips.length }})
     </div>
 
-    <ul style="padding-left: 16px; list-style-type: none;">
-        <li *ngFor="let t of trips; let i = index" style="margin-bottom: 16px; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
-            <strong>Trip #{{ i + 1 }}</strong>
-            <div>Connections: {{ t.connections.length }}</div>
-            <div>Travellers: {{ t.travellers.length }}</div>
-            <div>
-                Status:
-                <span
-                    class="trip-status"
-                    [ngClass]="{
-                    completed: t.tripStatus === 'COMPLETED',
-                    reserved: t.tripStatus === 'RESERVED',
-                    other: t.tripStatus !== 'COMPLETED' && t.tripStatus !== 'RESERVED'
-                    }"
-                >
-                    {{ t.tripStatus }}
-                </span>
-            </div>
-            <button
-                mat-stroked-button
-                color="primary"
-                (click)="endTrip(t)"
-                [disabled]="t.tripStatus === 'COMPLETED'">
-                End Trip
-            </button>
-        </li>
+    <div *ngIf="currentTrips.length === 0" style="color: #777; margin-bottom: 16px;">
+      No current trips.
+    </div>
+
+    <ul *ngIf="currentTrips.length > 0" style="padding-left: 16px; list-style-type: none;">
+      <li *ngFor="let t of currentTrips; let i = index"
+          style="margin-bottom: 16px; border-bottom: 1px solid #ccc; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+        <div>
+          <strong>Trip</strong><br />
+          Connections: {{ t.connections.length }} |
+          Travellers: {{ t.travellers.length }} |
+          Status:
+          <span
+            class="trip-status"
+            [ngClass]="{
+              completed: t.tripStatus === 'COMPLETED',
+              reserved: t.tripStatus === 'RESERVED',
+              other: t.tripStatus !== 'COMPLETED' && t.tripStatus !== 'RESERVED'
+            }"
+          >
+            {{ t.tripStatus }}
+          </span>
+        </div>
+
+        <button
+          mat-stroked-button
+          color="primary"
+          (click)="endTrip(t)"
+          [disabled]="t.tripStatus === 'COMPLETED'">
+          End Trip
+        </button>
+      </li>
     </ul>
+  </div>
+
+  <hr style="margin: 16px 0; border: none; border-top: 1px solid #e0e0e0;" />
+
+  <!-- History Trips (COMPLETED ones) -->
+  <div>
+    <div style="font-weight: 700; margin-bottom: 8px;">
+      History ({{ historyTrips.length }})
+    </div>
+
+    <div *ngIf="historyTrips.length === 0" style="color: #777;">
+      No completed trips yet.
+    </div>
+
+    <ul *ngIf="historyTrips.length > 0" style="padding-left: 16px; list-style-type: none;">
+      <li *ngFor="let t of historyTrips; let i = index"
+          style="margin-bottom: 16px; border-bottom: 1px solid #ccc; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+        <div>
+          <strong>Trip</strong><br />
+          Connections: {{ t.connections.length }} |
+          Travellers: {{ t.travellers.length }} |
+          Status:
+          <span
+            class="trip-status"
+            [ngClass]="{
+              completed: t.tripStatus === 'COMPLETED',
+              reserved: t.tripStatus === 'RESERVED',
+              other: t.tripStatus !== 'COMPLETED' && t.tripStatus !== 'RESERVED'
+            }"
+          >
+            {{ t.tripStatus }}
+          </span>
+        </div>
+
+        <!-- Completed trips show a disabled end button, cuz u dont need it anymore -->
+        <button mat-stroked-button color="primary" disabled>
+          End Trip
+        </button>
+      </li>
+    </ul>
+  </div>
+
 </div>
+
 
