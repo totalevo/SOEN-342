@@ -86,8 +86,6 @@ public class ConnectionCustomRepository {
             System.out.println("  Leg1: " + leg1.getDepartureCity() + " -> " + leg1.getArrivalCity() + " (" + leg1.getConnectionId() + ")");
         }
 
-
-
         List<List<Connection>> oneStopConnections = new ArrayList<>();
         List<List<Connection>> twoStopConnections = new ArrayList<>();
 
@@ -110,6 +108,9 @@ public class ConnectionCustomRepository {
             for (Connection leg2 : leg2List) {
                 // To avoid cycles
                 if (!leg2.getId().equals(leg1.getId())) {
+                    if (!isLayoverAllowed(leg1.getArrivalTime(), leg2.getDepartureTime())) {
+                        continue; // we wanna reject this pair based on policy
+                    }
                     List<Connection> combo = new ArrayList<>();
                     combo.add(leg1);
                     combo.add(leg2);
@@ -131,6 +132,9 @@ public class ConnectionCustomRepository {
             for (Connection leg2 : leg2List) {
                 // To avoid cycles and ensure leg2 is different from leg1
                 if (!leg2.getId().equals(leg1.getId())) {
+                    if (!isLayoverAllowed(leg1.getArrivalTime(), leg2.getDepartureTime())) {
+                        continue; // reject leg2
+                    }
                     // Find final leg (leg3) from leg2's arrival city to endCity
                     String leg3Query = "SELECT c FROM Connection c WHERE c.departureCity = :transitCity2 AND c.arrivalCity = :endCity AND c.departureTime > :prevArrival2";
                     List<Connection> leg3List = entityManager.createQuery(leg3Query, Connection.class)
@@ -140,6 +144,9 @@ public class ConnectionCustomRepository {
                             .getResultList();
 
                     for (Connection leg3 : leg3List) {
+                        if (!isLayoverAllowed(leg2.getArrivalTime(), leg3.getDepartureTime())) {
+                            continue; // reject leg3
+                        }
                         // To avoid cycles - ensure all three legs are different
                         if (!leg3.getId().equals(leg1.getId()) && !leg3.getId().equals(leg2.getId())) {
                             List<Connection> combo = new ArrayList<>();
@@ -224,4 +231,45 @@ public class ConnectionCustomRepository {
 
         return result;
     }
+
+    // Helper methods to deal with the layovers
+    private int toMinutes(String hhmm) {
+        String[] p = hhmm.split(":");
+        return Integer.parseInt(p[0]) * 60 + Integer.parseInt(p[1]);
+    }
+
+    private String cleanTime(String t) {
+        // Strip "(+1d)" if present
+        return t.contains("(+1d)") ? t.replaceAll("\\(\\+1d(ay)?\\)", "").trim() : t;
+    }
+
+    private boolean isDaytime(int minutesOfDay) {
+        return minutesOfDay >= 6 * 60 && minutesOfDay < 22 * 60;
+    }
+
+    private boolean isLayoverAllowed(String arrivalTimeRaw, String nextDepartureTimeRaw) {
+        String arr = cleanTime(arrivalTimeRaw);
+        String dep = cleanTime(nextDepartureTimeRaw);
+
+        int arrMin = toMinutes(arr);
+        int depMin = toMinutes(dep);
+
+        // current indirect logic already ensures dep > arr (same-day sequence)
+        int layover = depMin - arrMin;
+
+        // Disallow unrealistically short layovers
+        if (layover < 10) return false;
+
+        // Determine policy by ARRIVAL time
+        boolean day = isDaytime(arrMin);
+
+        if (day) {
+            // Daytime: 60–120 minutes
+            return layover >= 60 && layover <= 120;
+        } else {
+            // After-hours: ≤ 30 minutes
+            return layover <= 30;
+        }
+    }
+
 }
