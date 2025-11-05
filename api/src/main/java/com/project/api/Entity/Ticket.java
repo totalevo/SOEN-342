@@ -14,7 +14,7 @@ import java.util.UUID;
 public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    private Integer id;
 
     @OneToOne
     @JoinColumn(name = "reservation_id")

@@ -125,7 +125,7 @@ public class TripService {
         return tripDTOs;
     }
 
-    public TripDTO completeTrip(UUID tripId) {
+    public TripDTO completeTrip(Integer tripId) {
         Trip trip = tripRepository.findById(tripId)
                 .orElseThrow(() -> new RuntimeException("Trip not found: " + tripId));
 

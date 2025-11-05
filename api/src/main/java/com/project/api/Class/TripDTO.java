@@ -14,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class TripDTO {
 
-    private UUID tripId;
+    private Integer tripId;
     private List<Connection> connections;
     private List<Traveller> travellers;
     private String tripStatus;

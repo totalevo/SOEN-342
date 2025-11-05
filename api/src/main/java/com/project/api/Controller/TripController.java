@@ -43,7 +43,7 @@ public class TripController {
     }
 
     @PutMapping("/{tripId}/complete")
-    public ResponseEntity<TripDTO> completeTrip(@PathVariable UUID tripId) {
+    public ResponseEntity<TripDTO> completeTrip(@PathVariable Integer tripId) {
         TripDTO updated = tripService.completeTrip(tripId);
         return ResponseEntity.ok(updated);
     }

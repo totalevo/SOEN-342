@@ -16,7 +16,7 @@ public class Trip {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "trip_id", nullable = false)
-    private UUID id;
+    private Integer id;
 
     @ManyToMany
     @JoinTable(
