@@ -10,41 +10,30 @@ import { BookingService } from '../services/booking.service';
   styleUrl: './traveller-component.css'
 })
 export class TravellerComponent {
-  @Output() addTab = new EventEmitter<Traveller>();
+  @Output() travellerSaved = new EventEmitter<false>();
   name = new FormControl('');
   age = new FormControl(null);
   id = new FormControl('');
-  traveller: Traveller;
-
+  traveller: Traveller = { id: '', name: '', age: 0 };
   saved: Boolean = false;
 
   constructor(
     private bookingService: BookingService
-  ) {
-    this.traveller = {
-      age: this.age.value ?? 0,
-      id: this.id.value ?? '',
-      name: this.name.value ?? ''
-    }
-  }
-
-  createNewTab() {
-    const traveller = { id: 'aa', name: 'aaaa', age: 12 };
-    this.addTab.emit(traveller);
-  }
+  ) { }
 
   saveTraveller() {
-    this.traveller = {
-        age: this.age.value ?? 0,
-        id: this.id.value ?? '',
-        name: this.name.value ?? ''
-      }
+    this.traveller.name = this.name.value ?? '';
+    this.traveller.age = this.age.value ?? 0;
+    this.traveller.id = this.id.value ?? '';
+
     if (!this.saved) {
       
       this.bookingService.addTraveller(this.traveller);
       this.saved = true;
     }
     
-      console.log(this.bookingService.travellers);
+    console.log(this.bookingService.travellers);
+
+    this.travellerSaved.emit(false);
   }
 }

@@ -18,13 +18,14 @@
       </div>
     }
 
-    <mat-tab-group dynamicHeight>
-        <mat-tab label="Traveller 1">
-            <div class="example-small-box mat-elevation-z4"><app-traveller-component (addTab)="onAddTab($event)"></app-traveller-component></div>
-        </mat-tab>
+    <button (click)="createNewTab()" [disabled] = "isDisabled">
+        Add traveller
+    </button>
+
+    <mat-tab-group [(selectedIndex)]="selectedTabIndex" dynamicHeight>
         @for (traveller of travellers; track $index) {
-            <mat-tab label="Traveller {{$index + 2}}">
-            <div class="example-small-box mat-elevation-z4"><app-traveller-component (addTab)="onAddTab($event)"></app-traveller-component></div>
+            <mat-tab label="Traveller {{$index + 1}}">
+            <div class="example-small-box mat-elevation-z4"><app-traveller-component (travellerSaved)="onTravellerSaved($event)"></app-traveller-component></div>
         </mat-tab>
         }
     </mat-tab-group>

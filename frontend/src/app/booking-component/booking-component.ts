@@ -17,6 +17,8 @@ import { TravellerComponent } from '../traveller-component/traveller-component';
 export class BookingComponent  implements OnInit {
   connections: Connection[] = [];
   travellers: Traveller[] = [];
+  selectedTabIndex = 0;
+  isDisabled = false;
   constructor(
     private bookingService: BookingService,
     private router: Router,
@@ -26,8 +28,18 @@ export class BookingComponent  implements OnInit {
     this.connections = this.bookingService.getConnections();
   }
 
+  createNewTab() {
+    this.isDisabled = true;
+    this.onAddTab({});
+    this.selectedTabIndex = this.travellers.length;
+  }
+
   onAddTab(traveller: Traveller) {
-    this.travellers.push(traveller);
+    this.travellers.push(traveller); 
+  }
+
+  onTravellerSaved(flag: boolean) {
+    this.isDisabled = flag;
   }
 
   bookTrip() {
