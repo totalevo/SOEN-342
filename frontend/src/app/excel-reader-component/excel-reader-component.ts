@@ -6,6 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { HttpClient } from '@angular/common/http';  
 
 @Component({
   selector: 'app-excel-reader-component',
@@ -17,8 +18,49 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 export class ExcelReaderComponent {
   fileName: string = '';
   connections: Connection[] = [];
-  constructor(private apiConnectorService: ApiConnectorService) {}
+  constructor(
+    private apiConnectorService: ApiConnectorService,
+    private http: HttpClient
+  ) {
+    const path = 'assets/eu_rail_network.csv'; // hardcoded the path, aint the best thing but seves the purpose...
 
+    this.http.get(path, { responseType: 'arraybuffer' }).subscribe({
+      next: (data) => {
+        // Replaced onFileChange logic by a buffer, to make it automatic
+        const workbook: XLSX.WorkBook = XLSX.read(data, { type: 'array' });
+
+        const sheetName: string = workbook.SheetNames[0];
+        const sheet: XLSX.WorkSheet = workbook.Sheets[sheetName];
+
+        const rows: any[] = XLSX.utils.sheet_to_json(sheet);
+
+        this.connections = rows.map((row) => ({
+          connectionId: row['Route ID'] ?? '',
+          departureCity: row['Departure City'] ?? '',
+          arrivalCity: row['Arrival City'] ?? '',
+          departureTime: row['Departure Time'] ?? '',
+          arrivalTime: row['Arrival Time'] ?? '',
+          trainType: row['Train Type'] ?? '',
+          daysOfOperation: row['Days of Operation'] ?? '',
+          firstClassRate: Number(row['First Class ticket rate (in euro)']) || 0,
+          secondClassRate: Number(row['Second Class ticket rate (in euro)']) || 0,
+          durationMinutes: 0,
+        }));
+
+        this.fileName = 'connections.xlsx';
+
+        console.log('Auto-parsed Connections:', this.connections);
+
+        // Make call to backend / sending connections
+        this.sendNewListOfConnection();
+      },
+      error: (err) => {
+        console.error('Error auto-loading Excel from assets:', err);
+      },
+    });
+  }
+
+  // Old Function to bring the file
   onFileChange(event: any): void {
     const file = event.target.files[0];
     if (file) {
@@ -54,13 +96,13 @@ export class ExcelReaderComponent {
           durationMinutes: 0
         }));
 
-        console.log('Parsed Connections:', this.connections);
+        console.log('Parsed Connections (manual):', this.connections);
       };
 
       reader.readAsBinaryString(target.files[0]);
     }
   }
-
+  
   sendNewListOfConnection() {
     if (!this.fileName) {
       return;
