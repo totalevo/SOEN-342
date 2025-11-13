@@ -25,6 +25,12 @@ public class ConnectionController {
     @PostMapping("/upload")
     public ResponseEntity<String> uploadConnections(@RequestBody List<Connection> connections) {
         try {
+            long existingCount = connectionRepository.count();
+
+            if(existingCount > 0){
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body("Connections already loaded(" + existingCount + " rows. Upload was skipped");
+            }
             List<Connection> processedConnections = connectionService.processAndCleanUpRawConnections(connections);
             List<Connection> savedConnections = connectionRepository.saveAll(processedConnections);
             return ResponseEntity.ok("Successfully saved " + savedConnections.size() + " connections");
