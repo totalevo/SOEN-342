@@ -18,3 +18,7 @@ Requirement:
 <br>
 Make sure that docker desktop is running.
 To run the api, you need to be in the /api folder and then in Intellij find the ApiApplication, double click on it and then you should see a play button in green in the top right of the IDE.
+
+Demo:
+https://github.com/user-attachments/assets/92731574-ed7b-469d-8fb7-7b1ccdc0a734
+
