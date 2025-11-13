@@ -1,0 +1,26 @@
+context TripService::createTrip(tripDTO : TripDTO)
+	pre: tripDTO.travellers->notEmpty() and
+	     tripDTO.connections->notEmpty() and
+	     tripDTO.travellers->forAll(t : Traveller | 
+			t.reservations->forAll(r : Reservation |
+				r.trip.tripStatus <> 'RESERVED' or
+				r.trip.connections <> tripDTO.connections
+			)
+		)
+	post: Trip.allInstances()->exists(t : Trip |
+        	t.tripStatus = 'RESERVED' and
+        	t.connections = tripDTO.connections and
+        	t.reservationList->size() = tripDTO.travellers->size() and
+        	t.reservationList->forAll(r |
+            		tripDTO.travellers->includes(r.traveller)
+        	)
+    	)
+
+
+context Reservation
+	inv: self.traveller <> null
+	inv: self.trip <> null
+	inv: self.ticket <> null
+
+
+
