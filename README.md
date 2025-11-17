@@ -22,5 +22,7 @@ To run the api, you need to be in the /api folder and then in Intellij find the 
 <br>
 
 ## Video Demo
-https://github.com/user-attachments/assets/92731574-ed7b-469d-8fb7-7b1ccdc0a734
+https://github.com/user-attachments/assets/af012864-08e8-48d8-aa2d-93642274817e
+
+
 
